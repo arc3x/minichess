@@ -256,7 +256,11 @@ public class chess {
 		return 0;
 	}
 
-    //convert "40-30" input as (4,0,3,0) to "a2-a3"
+    //  converts array positions to move strings
+    //  (4,0,3,0) -> "a2-a3"
+    //    array columns translate to letter at the start of the position eg 'a'
+    //    array rows translate to an oppositely enumerated list of integers that
+    //      occupy the second position of the move eg '2'
     public static String array_to_board(int si, int sj, int fi, int fj) {
         String strOut = "";
         switch (sj) {

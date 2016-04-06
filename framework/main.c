@@ -1,7 +1,7 @@
 #include "main.h"
 
 int main_intWebserver = 8042; // CHANGE THIS - OPTIONAL
-int main_intZeromq = 54361; // CHANGE THIS - OPTIONAL
+int main_intZeromq = 54342; // CHANGE THIS - OPTIONAL
 
 int main(int argc, char** argv) {
 	{

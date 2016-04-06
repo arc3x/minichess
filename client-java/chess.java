@@ -262,8 +262,10 @@ public class chess {
         for (int i=0; i<6; i++) {
             for (int j=0; j<5; j++) {
                switch (board[i][j]) {
+                   case 'P':
                    case 'p':
                        System.out.println("p detected");
+                       break;
                }
             }
         }

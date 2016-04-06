@@ -281,9 +281,7 @@ public class chess {
         }
 
        // strOut.add("a5-a4\n");
-        for (String s: strOut) {
-            System.out.println(s);
-        }
+
 
 
         return strOut;
@@ -299,7 +297,9 @@ public class chess {
         }
 
 
-		
+        for (String s: strOut) {
+            System.out.println(s);
+        }
 		/*strOut.add("a5-a4\n");
 		strOut.add("b5-b4\n");
 		strOut.add("c5-c4\n");

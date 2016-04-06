@@ -353,14 +353,50 @@ public class chess {
         Vector<String> strOut = new Vector<String>();
 
         switch (board[i][j]) {
+            //White Pawn
             case 'P':
                 //can pawn move up?
                 if (isValid(i-1,j)) {
                     strOut.add(array_to_board(i,j,i-1,j));
                 }
                 //can pawn attach up-left?
-                //if (isValid(i-1, j-1))
+                if (isValid(i-1, j-1)) {
+                    if (isEnemy(board[i-1][j-1])) {
+                        strOut.add(array_to_board(i,j,i-1,j-1));
+                    }
+                }
+                //can pawn attach up-right?
+                if (isValid(i-1, j+1)) {
+                    if (isEnemy(board[i-1][j+1])) {
+                        strOut.add(array_to_board(i,j,i-1,j+1));
+                    }
+                }
+                break;
+
+            //Black Pawn
             case 'p':
+                //can pawn move down?
+                if (isValid(i+1,j)) {
+                    strOut.add(array_to_board(i,j,i+1,j));
+                }
+                //can pawn attach down-left?
+                if (isValid(i+1, j-1)) {
+                    if (isEnemy(board[i+1][j-1])) {
+                        strOut.add(array_to_board(i,j,i+1,j-1));
+                    }
+                }
+                //can pawn attach down-right?
+                if (isValid(i+1, j+1)) {
+                    if (isEnemy(board[i+1][j+1])) {
+                        strOut.add(array_to_board(i,j,i+1,j+1));
+                    }
+                }
+                break;
+
+            //King
+            case 'k':
+            case 'K':
+                
         }
 
        // strOut.add("a5-a4\n");

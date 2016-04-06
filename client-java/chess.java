@@ -259,10 +259,48 @@ public class chess {
     //convert "40-30" input as (4,0,3,0) to "b0-c0"
     public static String array_to_board(int si, int sj, int fi, int fj) {
         String strOut = "";
-        strOut += si;
+        switch (si) {
+            case 0:
+                strOut += 'a';
+                break;
+            case 1:
+                strOut += 'b';
+                break;
+            case 2:
+                strOut += 'c';
+                break;
+            case 3:
+                strOut += 'd';
+                break;
+            case 4:
+                strOut += 'e';
+                break;
+            case 5:
+                strOut += 'f';
+                break;
+        }
         strOut += sj;
         strOut += "-";
-        strOut += fi;
+        switch (fi) {
+            case 0:
+                strOut += 'a';
+                break;
+            case 1:
+                strOut += 'b';
+                break;
+            case 2:
+                strOut += 'c';
+                break;
+            case 3:
+                strOut += 'd';
+                break;
+            case 4:
+                strOut += 'e';
+                break;
+            case 5:
+                strOut += 'f';
+                break;
+        }
         strOut += fj;
 
         return strOut;

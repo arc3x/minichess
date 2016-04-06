@@ -195,8 +195,9 @@ public class chess {
             return '=';
         }
 	}
-	
-	public static boolean isValid(int intX, int intY) {
+
+    //CHANGED: isValid now is with respect to the board array
+	public static boolean isValid(int intY, int intX) {
 		if (intX < 0) {
 			return false;
 			
@@ -357,6 +358,8 @@ public class chess {
                 if (isValid(i-1,j)) {
                     strOut.add(array_to_board(i,j,i-1,j));
                 }
+                //can pawn attach up-left?
+                if (isValid(i-1, j-1))
             case 'p':
         }
 

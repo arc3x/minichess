@@ -66,6 +66,7 @@ public class chess {
 	private static char side = 'W';
 	private static char[][] board = new char[6][5];
 
+    //START: HELPER FUNCTIONS
 	public static void print_board() {
 		System.out.print(turn+" "+side+"\n");
 		for (int i=0; i<6; i++) {
@@ -75,6 +76,9 @@ public class chess {
 			System.out.print("\n");
 		}
 	}
+
+
+    //END: HELPER FUNCTIONS
 
 
 
@@ -254,7 +258,16 @@ public class chess {
 	
 	public static Vector<String> moves() {
 		// with reference to the state of the game and return the possible moves - one example is given below - note that a move has exactly 6 characters
-		
+
+        for (int i=0; i<6; i++) {
+            for (int j=0; j<5; j++) {
+               switch (board[i][j]) {
+                   case 'p':
+                       System.out.println("p detected");
+               }
+            }
+        }
+
 		Vector<String> strOut = new Vector<String>();
 		
 		strOut.add("a5-a4\n");

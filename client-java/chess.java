@@ -255,30 +255,58 @@ public class chess {
 		
 		return 0;
 	}
-	
+
+    //convert "40-30" input as (4,0,3,0) to "b0-c0"
+    public static String array_to_board(int si, int sj, int fi, int fj) {
+        String strOut = "";
+        strOut += si;
+        strOut += sj;
+        strOut += "-";
+        strOut += fi;
+        strOut += fj;
+
+        return strOut;
+    }
+
+    public static Vector<String> piece_moves(int i, int j) {
+        Vector<String> strOut = new Vector<String>();
+
+        switch (board[i][j]) {
+            case 'P':
+                //can pawn move up?
+                if (isValid(i-1,j)) {
+                    strOut.add(array_to_board(i,j,(i-1),j));
+                }
+            case 'p':
+        }
+
+       // strOut.add("a5-a4\n");
+        for (String s: strOut) {
+            System.out.println(s);
+        }
+
+
+        return strOut;
+    }
+
 	public static Vector<String> moves() {
 		// with reference to the state of the game and return the possible moves - one example is given below - note that a move has exactly 6 characters
-
+        Vector<String> strOut = new Vector<String>();
         for (int i=0; i<6; i++) {
             for (int j=0; j<5; j++) {
-               switch (board[i][j]) {
-                   case 'P':
-                   case 'p':
-                       System.out.println("p detected");
-                       break;
-               }
+               strOut.addAll(piece_moves(i, j));
             }
         }
 
-		Vector<String> strOut = new Vector<String>();
+
 		
-		strOut.add("a5-a4\n");
+		/*strOut.add("a5-a4\n");
 		strOut.add("b5-b4\n");
 		strOut.add("c5-c4\n");
 		strOut.add("d5-d4\n");
 		strOut.add("e5-e4\n");
 		strOut.add("b6-a4\n");
-		strOut.add("b6-c4\n");
+		strOut.add("b6-c4\n");*/
 		
 		return strOut;
 	}

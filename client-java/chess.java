@@ -359,7 +359,7 @@ public class chess {
                     strOut.add(array_to_board(i,j,i-1,j));
                 }
                 //can pawn attach up-left?
-                if (isValid(i-1, j-1))
+                //if (isValid(i-1, j-1))
             case 'p':
         }
 

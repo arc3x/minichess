@@ -1,34 +1,195 @@
 import java.util.Vector;
 
 public class chess {
+	//BEGIN: TESTING FUNCTIONS
+	public static void main(String [] args) {
+		System.out.println("test");
+		reset();
+		print_board();
+		System.out.println(boardGet());
+		String strOut = "";
+
+		strOut += "12W\n";
+		strOut += "kqbnr\n";
+		strOut += "ppppp\n";
+		strOut += ".....\n";
+		strOut += "P....\n";
+		strOut += ".PPPP\n";
+		strOut += "RNBQK\n";
+		boardSet(strOut);
+		print_board();
+	}
+
+	public static void preset() {
+		// reset the state of the game / your internal variables - note that this function is highly dependent on your implementation
+		turn = 1;
+		side = 'W';
+		board[0][0] = 'k';
+		board[0][1] = 'q';
+		board[0][2] = 'b';
+		board[0][3] = 'n';
+		board[0][4] = 'r';
+
+		board[1][0] = '.';
+		board[1][1] = 'p';
+		board[1][2] = 'p';
+		board[1][3] = 'p';
+		board[1][4] = 'p';
+
+		board[2][0] = 'p';
+		board[2][1] = '.';
+		board[2][2] = '.';
+		board[2][3] = '.';
+		board[2][4] = '.';
+
+		board[3][0] = '.';
+		board[3][1] = '.';
+		board[3][2] = '.';
+		board[3][3] = '.';
+		board[3][4] = 'P';
+
+		board[4][0] = 'P';
+		board[4][1] = 'P';
+		board[4][2] = 'P';
+		board[4][3] = 'P';
+		board[4][4] = '.';
+
+		board[5][0] = 'R';
+		board[5][1] = 'N';
+		board[5][2] = 'B';
+		board[5][3] = 'Q';
+		board[5][4] = 'K';
+	}
+	//END: TESTING FUNCTIONS
+
+	private static int turn = 1;
+	private static char side = 'W';
+	private static char[][] board = new char[6][5];
+
+	public static void print_board() {
+		System.out.print(turn+" "+side+"\n");
+		for (int i=0; i<6; i++) {
+			for (int j=0; j<5; j++) {
+				System.out.print(board[i][j]);
+			}
+			System.out.print("\n");
+		}
+	}
+
+
+
 	public static void reset() {
 		// reset the state of the game / your internal variables - note that this function is highly dependent on your implementation
+		turn = 1;
+		side = 'W';
+		board[0][0] = 'k';
+		board[0][1] = 'q';
+		board[0][2] = 'b';
+		board[0][3] = 'n';
+		board[0][4] = 'r';
+
+		board[1][0] = 'p';
+		board[1][1] = 'p';
+		board[1][2] = 'p';
+		board[1][3] = 'p';
+		board[1][4] = 'p';
+
+		board[2][0] = '.';
+		board[2][1] = '.';
+		board[2][2] = '.';
+		board[2][3] = '.';
+		board[2][4] = '.';
+
+		board[3][0] = '.';
+		board[3][1] = '.';
+		board[3][2] = '.';
+		board[3][3] = '.';
+		board[3][4] = '.';
+
+		board[4][0] = 'P';
+		board[4][1] = 'P';
+		board[4][2] = 'P';
+		board[4][3] = 'P';
+		board[4][4] = 'P';
+
+		board[5][0] = 'R';
+		board[5][1] = 'N';
+		board[5][2] = 'B';
+		board[5][3] = 'Q';
+		board[5][4] = 'K';
 	}
 	
 	public static String boardGet() {
 		// return the state of the game - one example is given below - note that the state has exactly 40 or 41 characters
-		
+
 		String strOut = "";
-		
-		strOut += "1 W\n";
-		strOut += "kqbnr\n";
-		strOut += "ppppp\n";
-		strOut += ".....\n";
-		strOut += ".....\n";
-		strOut += "PPPPP\n";
-		strOut += "RNBQK\n";
-		
+		strOut += turn+" "+side+"\n";
+		for (int i=0; i<6; i++) {
+			for (int j=0; j<5; j++) {
+				strOut += board[i][j];
+			}
+			strOut += "\n";
+		}
+
 		return strOut;
 	}
 	
 	public static void boardSet(String strIn) {
 		// read the state of the game from the provided argument and set your internal variables accordingly - note that the state has exactly 40 or 41 characters
+
+		String[] split_str = strIn.split("\n");
+		//WARNING: turn is a char make sure two digit turns parse correctly
+		turn = Character.getNumericValue(split_str[0].charAt(0));
+		int turn_add = Character.getNumericValue(split_str[0].charAt(1));
+		if (turn_add != -1) {
+			turn *= 10;
+			turn += turn_add;
+            side = split_str[0].charAt(3);
+		} else {
+            side = split_str[0].charAt(2);
+        }
+		board[0] = split_str[1].toCharArray();
+		board[1] = split_str[2].toCharArray();
+		board[2] = split_str[3].toCharArray();
+		board[3] = split_str[4].toCharArray();
+		board[4] = split_str[5].toCharArray();
+		board[5] = split_str[6].toCharArray();
 	}
 	
 	public static char winner() {
 		// determine the winner of the current state of the game and return '?' or '=' or 'W' or 'B' - note that we are returning a character and not a string
-		
-		return '?';
+		//print_board();
+
+        if (turn > 40) {
+            return '=';
+        }
+
+        boolean white = false;
+		boolean black = false;
+		for (int i=0; i<6; i++) {
+			for (int j=0; j<5; j++) {
+				if (board[i][j]=='k')
+					black = true;
+				if (board[i][j]=='K')
+					white = true;
+			}
+		}
+		if (white && black) {
+            //System.out.println("?");
+            return '?';
+        }
+		if (white) {
+            //System.out.println("W");
+            return 'W';
+        }
+		if (black) {
+            //System.out.println("B");
+            return 'B';
+        }
+		else {
+            //System.out.println("=");
+            return '=';
+        }
 	}
 	
 	public static boolean isValid(int intX, int intY) {
@@ -53,20 +214,36 @@ public class chess {
 	
 	public static boolean isEnemy(char charPiece) {
 		// with reference to the state of the game, return whether the provided argument is a piece from the side not on move - note that we could but should not use the other is() functions in here but probably
-		
-		return false;
+		if (charPiece == '.') {
+            return false;
+        }
+        if (side == 'W') {
+			return !Character.isUpperCase(charPiece);
+		}
+		else if (side == 'B') {
+			return Character.isUpperCase(charPiece);
+		}
+		return false; //just for java
 	}
+
 	
 	public static boolean isOwn(char charPiece) {
 		// with reference to the state of the game, return whether the provided argument is a piece from the side on move - note that we could but should not use the other is() functions in here but probably
-		
+		if (charPiece == '.') {
+            return false;
+        }
+        if (side == 'W') {
+			return Character.isUpperCase(charPiece);
+		}
+		else if (side == 'B') {
+			return !Character.isUpperCase(charPiece);
+		}
 		return false;
 	}
 	
 	public static boolean isNothing(char charPiece) {
 		// return whether the provided argument is not a piece / is an empty field - note that we could but should not use the other is() functions in here but probably
-		
-		return false;
+		return charPiece == '.';
 	}
 	
 	public static int eval() {
@@ -105,6 +282,9 @@ public class chess {
 	
 	public static void move(String charIn) {
 		// perform the supplied move (for example "a5-a4\n") and update the state of the game / your internal variables accordingly - note that it advised to do a sanity check of the supplied move
+        //string from =
+        //string to =
+        //char piece_holder =
 	}
 	
 	public static String moveRandom() {

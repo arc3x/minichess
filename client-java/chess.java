@@ -256,32 +256,51 @@ public class chess {
 		return 0;
 	}
 
-    //convert "40-30" input as (4,0,3,0) to "b0-c0"
+    //convert "40-30" input as (4,0,3,0) to "a2-a3"
     public static String array_to_board(int si, int sj, int fi, int fj) {
         String strOut = "";
+        switch (sj) {
+            case 0:
+                strOut += 'a';
+                break;
+            case 1:
+                strOut += 'b';
+                break;
+            case 2:
+                strOut += 'c';
+                break;
+            case 3:
+                strOut += 'd';
+                break;
+            case 4:
+                strOut += 'e';
+                break;
+            case 5:
+                strOut += 'f';
+                break;
+        }
         switch (si) {
             case 0:
-                strOut += 'a';
+                strOut += '6';
                 break;
             case 1:
-                strOut += 'b';
+                strOut += '5';
                 break;
             case 2:
-                strOut += 'c';
+                strOut += '4';
                 break;
             case 3:
-                strOut += 'd';
+                strOut += '3';
                 break;
             case 4:
-                strOut += 'e';
+                strOut += '2';
                 break;
             case 5:
-                strOut += 'f';
+                strOut += '1';
                 break;
         }
-        strOut += sj;
         strOut += "-";
-        switch (fi) {
+        switch (fj) {
             case 0:
                 strOut += 'a';
                 break;
@@ -301,7 +320,26 @@ public class chess {
                 strOut += 'f';
                 break;
         }
-        strOut += fj;
+        switch (fi) {
+            case 0:
+                strOut += '6';
+                break;
+            case 1:
+                strOut += '5';
+                break;
+            case 2:
+                strOut += '4';
+                break;
+            case 3:
+                strOut += '3';
+                break;
+            case 4:
+                strOut += '2';
+                break;
+            case 5:
+                strOut += '1';
+                break;
+        }
 
         return strOut;
     }
@@ -313,7 +351,7 @@ public class chess {
             case 'P':
                 //can pawn move up?
                 if (isValid(i-1,j)) {
-                    strOut.add(array_to_board(i,j,(i-1),j));
+                    strOut.add(array_to_board(i,j,i-1,j));
                 }
             case 'p':
         }

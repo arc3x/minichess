@@ -196,8 +196,8 @@ public class chess {
         }
 	}
 
-    //CHANGED: isValid now is with respect to the board array
-	public static boolean isValid(int intY, int intX) {
+    
+	public static boolean isValid(int intX, int intY) {
 		if (intX < 0) {
 			return false;
 			
@@ -217,6 +217,27 @@ public class chess {
 		return true;
 	}
 	
+    //CHANGED: isValid now is with respect to the board array
+	public static boolean isValidArrayMove(int intY, int intX) {
+		if (intX < 0) {
+			return false;
+			
+		} else if (intX > 4) {
+			return false;
+			
+		}
+		
+		if (intY < 0) {
+			return false;
+			
+		} else if (intY > 5) {
+			return false;
+			
+		}
+		
+		return true;
+	}
+    
 	public static boolean isEnemy(char charPiece) {
 		// with reference to the state of the game, return whether the provided argument is a piece from the side not on move - note that we could but should not use the other is() functions in here but probably
 		if (charPiece == '.') {
@@ -351,22 +372,33 @@ public class chess {
 
     public static Vector<String> piece_moves(int i, int j) {
         Vector<String> strOut = new Vector<String>();
-
-        switch (board[i][j]) {
+        System.out.println("piece_moves called : "+board[i][j]);        
+        //utility defs
+        boolean flag_ul = true;
+        boolean flag_u = true;
+        boolean flag_ur = true;
+        boolean flag_r = true;
+        boolean flag_dr = true;
+        boolean flag_d = true;
+        boolean flag_dl = true;
+        boolean flag_l = true;
+        int step = 1;
+        switch (board[i][j]) {                        
             //White Pawn
             case 'P':
+                //System.out.println("piece_moves called - pawn");
                 //can pawn move up?
-                if (isValid(i-1,j)) {
+                if (isValidArrayMove(i-1,j)) {
                     strOut.add(array_to_board(i,j,i-1,j));
                 }
                 //can pawn attach up-left?
-                if (isValid(i-1, j-1)) {
+                if (isValidArrayMove(i-1, j-1)) {
                     if (isEnemy(board[i-1][j-1])) {
                         strOut.add(array_to_board(i,j,i-1,j-1));
                     }
                 }
                 //can pawn attach up-right?
-                if (isValid(i-1, j+1)) {
+                if (isValidArrayMove(i-1, j+1)) {
                     if (isEnemy(board[i-1][j+1])) {
                         strOut.add(array_to_board(i,j,i-1,j+1));
                     }
@@ -375,18 +407,19 @@ public class chess {
 
             //Black Pawn
             case 'p':
+                //System.out.println("piece_moves called - pawn");
                 //can pawn move down?
-                if (isValid(i+1,j)) {
+                if (isValidArrayMove(i+1,j)) {
                     strOut.add(array_to_board(i,j,i+1,j));
                 }
                 //can pawn attach down-left?
-                if (isValid(i+1, j-1)) {
+                if (isValidArrayMove(i+1, j-1)) {
                     if (isEnemy(board[i+1][j-1])) {
                         strOut.add(array_to_board(i,j,i+1,j-1));
                     }
                 }
                 //can pawn attach down-right?
-                if (isValid(i+1, j+1)) {
+                if (isValidArrayMove(i+1, j+1)) {
                     if (isEnemy(board[i+1][j+1])) {
                         strOut.add(array_to_board(i,j,i+1,j+1));
                     }
@@ -396,12 +429,317 @@ public class chess {
             //King
             case 'k':
             case 'K':
-                
-        }
-
-       // strOut.add("a5-a4\n");
-
-
+                //System.out.println("piece_moves called - king");
+                //can king attack/move up-left
+                if (isValidArrayMove(i-1,j-1)) {
+                    if (!isOwn(board[i-1][j-1])) {
+                        strOut.add(array_to_board(i,j,i-1,j-1));
+                    }
+                }
+                //can king attack/move up
+                if (isValidArrayMove(i-1,j)) {
+                    if (!isOwn(board[i-1][j])) {
+                        strOut.add(array_to_board(i,j,i-1,j));
+                    }
+                }
+                //can king attack/move up-right
+                if (isValidArrayMove(i-1,j+1)) {
+                    if (!isOwn(board[i-1][j+1])) {
+                        strOut.add(array_to_board(i,j,i-1,j+1));
+                    }
+                }
+                //can king attack/move right
+                if (isValidArrayMove(i,j+1)) {
+                    if (!isOwn(board[i][j+1])) {
+                        strOut.add(array_to_board(i,j,i,j+1));
+                    }
+                }
+                //can king attack/move down-right
+                if (isValidArrayMove(i+1,j+1)) {
+                    if (!isOwn(board[i+1][j+1])) {
+                        strOut.add(array_to_board(i,j,i+1,j+1));
+                    }
+                }
+                //can king attack/move down
+                if (isValidArrayMove(i+1,j)) {
+                    if (!isOwn(board[i+1][j])) {
+                        strOut.add(array_to_board(i,j,i+1,j));
+                    }
+                }
+                //can king attack/move down-left
+                if (isValidArrayMove(i+1,j-1)) {
+                    if (!isOwn(board[i+1][j-1])) {
+                        strOut.add(array_to_board(i,j,i+1,j-1));
+                    }
+                }
+                //can king attack/move left
+                if (isValidArrayMove(i,j-1)) {
+                    if (!isOwn(board[i][j-1])) {
+                        strOut.add(array_to_board(i,j,i,j-1));
+                    }
+                }
+                break;
+            //Queen
+            case 'q':
+            case 'Q':
+                //System.out.println("piece_moves called - queen");
+                //look around - mark flags false when  wall or enemy is hit
+                flag_ul = true;
+                flag_u = true;
+                flag_ur = true;
+                flag_r = true;
+                flag_dr = true;
+                flag_d = true;
+                flag_dl = true;
+                flag_l = true;
+                step = 1;
+                while (flag_ul || flag_u || flag_ur || flag_r || flag_dr || flag_d || flag_dl || flag_dl || flag_l) {
+                    //ul attack/move
+                    if (flag_ul && isValidArrayMove(i-step,j-step) && !isOwn(board[i-step][j-step])) {
+                        strOut.add(array_to_board(i,j,i-step,j-step));
+                        //if we hit an enemy we wont look any further
+                        if (isEnemy(board[i-step][j-step])) {
+                            flag_ul = false;
+                        }
+                    } else {
+                        flag_ul = false;
+                    }
+                    //u attack/move
+                    if (flag_u && isValidArrayMove(i-step,j) && !isOwn(board[i-step][j])) {
+                        strOut.add(array_to_board(i,j,i-step,j));
+                        //if we hit an enemy we wont look any further
+                        if (isEnemy(board[i-step][j])) {
+                            flag_u = false;
+                        }
+                    } else {
+                        flag_u = false;
+                    }
+                    //ur attack/move
+                    if (flag_ur && isValidArrayMove(i-step,j+step) && !isOwn(board[i-step][j+step])) {
+                        strOut.add(array_to_board(i,j,i-step,j+step));
+                        //if we hit an enemy we wont look any further
+                        if (isEnemy(board[i-step][j+step])) {
+                            flag_ur = false;
+                        }
+                    } else {
+                        flag_ur = false;
+                    }
+                    //r attack/move
+                    if (flag_r && isValidArrayMove(i,j+step) && !isOwn(board[i][j+step])) {
+                        strOut.add(array_to_board(i,j,i,j+step));
+                        //if we hit an enemy we wont look any further
+                        if (isEnemy(board[i][j+step])) {
+                            flag_r = false;
+                        }
+                    } else {
+                        flag_r = false;
+                    }
+                    //dr attack/move
+                    if (flag_dr && isValidArrayMove(i+step,j+step) && !isOwn(board[i+step][j+step])) {
+                        strOut.add(array_to_board(i,j,i+step,j+step));
+                        //if we hit an enemy we wont look any further
+                        if (isEnemy(board[i+step][j+step])) {
+                            flag_dr = false;
+                        }
+                    } else {
+                        flag_dr = false;
+                    }
+                    //d attack/move
+                    if (flag_d && isValidArrayMove(i+step,j) && !isOwn(board[i+step][j])) {
+                        strOut.add(array_to_board(i,j,i+step,j));
+                        //if we hit an enemy we wont look any further
+                        if (isEnemy(board[i+step][j])) {
+                            flag_d = false;
+                        }
+                    } else {
+                        flag_d = false;
+                    }
+                    //dl attack/move
+                    if (flag_dl && isValidArrayMove(i+step,j-step) && !isOwn(board[i+step][j-step])) {
+                        strOut.add(array_to_board(i,j,i+step,j-step));
+                        //if we hit an enemy we wont look any further
+                        if (isEnemy(board[i+step][j-step])) {
+                            flag_dl = false;
+                        }
+                    } else {
+                        flag_dl = false;
+                    }
+                    //l attack/move
+                    if (flag_l && isValidArrayMove(i,j-step) && !isOwn(board[i][j-step])) {
+                        strOut.add(array_to_board(i,j,i,j-step));
+                        //if we hit an enemy we wont look any further
+                        if (isEnemy(board[i][j-step])) {
+                            flag_l = false;
+                        }
+                    } else {
+                        flag_l = false;
+                    }                                    
+                }
+                break;
+            //Bishop
+            case 'b':
+            case 'B':
+                //System.out.println("piece_moves called - bishop");
+                flag_ul = true;
+                flag_u = true;
+                flag_ur = true;
+                flag_r = true;
+                flag_dr = true;
+                flag_d = true;
+                flag_dl = true;
+                flag_l = true;
+                step = 1;
+                while (flag_ul || flag_u || flag_ur || flag_r || flag_dr || flag_d || flag_dl || flag_dl || flag_l) {
+                    //ul attack/move
+                    if (flag_ul && isValidArrayMove(i-step,j-step) && !isOwn(board[i-step][j-step])) {
+                        strOut.add(array_to_board(i,j,i-step,j-step));
+                        //if we hit an enemy we wont look any further
+                        if (isEnemy(board[i-step][j-step])) {
+                            flag_ul = false;
+                        }
+                    } else {
+                        flag_ul = false;
+                    }
+                    //u move
+                    if (flag_u && isValidArrayMove(i-step,j) && isNothing(board[i-step][j])) {
+                        strOut.add(array_to_board(i,j,i-step,j));                        
+                        flag_u = false;                        
+                    } else { flag_u = false; }
+                    //ur attack/move
+                    if (flag_ur && isValidArrayMove(i-step,j+step) && !isOwn(board[i-step][j+step])) {
+                        strOut.add(array_to_board(i,j,i-step,j+step));
+                        //if we hit an enemy we wont look any further
+                        if (isEnemy(board[i-step][j+step])) {
+                            flag_ur = false;
+                        }
+                    } else {
+                        flag_ur = false;
+                    }
+                    //r move
+                    if (flag_r && isValidArrayMove(i,j+step) && isNothing(board[i][j+step])) {
+                        strOut.add(array_to_board(i,j,i,j+step));                        
+                        flag_r = false;
+                    } else { flag_r = false; }
+                    //dr attack/move
+                    if (flag_dr && isValidArrayMove(i+step,j+step) && !isOwn(board[i+step][j+step])) {
+                        strOut.add(array_to_board(i,j,i+step,j+step));
+                        //if we hit an enemy we wont look any further
+                        if (isEnemy(board[i+step][j+step])) {
+                            flag_dr = false;
+                        }
+                    } else {
+                        flag_dr = false;
+                    }
+                    //d move
+                    if (flag_d && isValidArrayMove(i+step,j) && isNothing(board[i+step][j])) {
+                        strOut.add(array_to_board(i,j,i+step,j));                        
+                        flag_d = false;
+                    } else { flag_d = false; }
+                    //dl attack/move
+                    if (flag_dl && isValidArrayMove(i+step,j-step) && !isOwn(board[i+step][j-step])) {
+                        strOut.add(array_to_board(i,j,i+step,j-step));
+                        //if we hit an enemy we wont look any further
+                        if (isEnemy(board[i+step][j-step])) {
+                            flag_dl = false;
+                        }
+                    } else {
+                        flag_dl = false;
+                    }
+                    //l move
+                    if (flag_l && isValidArrayMove(i,j-step) && isNothing(board[i][j-step])) {
+                        strOut.add(array_to_board(i,j,i,j-step));                        
+                        flag_l = false;
+                    } else { flag_l = false; }                                    
+                }
+                break;
+            //Rook
+            case 'r':
+            case 'R':
+                //System.out.println("piece_moves called - rook");
+                flag_u = true;
+                flag_r = true;
+                flag_d = true;
+                flag_l = true;
+                step = 1;
+                while (flag_u || flag_r || flag_d || flag_l) {                    
+                    //u attack/move
+                    if (flag_u && isValidArrayMove(i-step,j) && !isOwn(board[i-step][j])) {
+                        strOut.add(array_to_board(i,j,i-step,j));
+                        //if we hit an enemy we wont look any further
+                        if (isEnemy(board[i-step][j])) {
+                            flag_u = false;
+                        }
+                    } else {
+                        flag_u = false;
+                    }                    
+                    //r attack/move
+                    if (flag_r && isValidArrayMove(i,j+step) && !isOwn(board[i][j+step])) {
+                        strOut.add(array_to_board(i,j,i,j+step));
+                        //if we hit an enemy we wont look any further
+                        if (isEnemy(board[i][j+step])) {
+                            flag_r = false;
+                        }
+                    } else {
+                        flag_r = false;
+                    }                    
+                    //d attack/move
+                    if (flag_d && isValidArrayMove(i+step,j) && !isOwn(board[i+step][j])) {
+                        strOut.add(array_to_board(i,j,i+step,j));
+                        //if we hit an enemy we wont look any further
+                        if (isEnemy(board[i+step][j])) {
+                            flag_d = false;
+                        }
+                    } else {
+                        flag_d = false;
+                    }                    
+                    //l attack/move
+                    if (flag_l && isValidArrayMove(i,j-step) && !isOwn(board[i][j-step])) {
+                        strOut.add(array_to_board(i,j,i,j-step));
+                        //if we hit an enemy we wont look any further
+                        if (isEnemy(board[i][j-step])) {
+                            flag_l = false;
+                        }
+                    } else {
+                        flag_l = false;
+                    }                                    
+                }
+                break;
+            //knight
+            case 'n':
+            case 'N':
+                //uul
+                if (isValidArrayMove(i-2,j-1) && !isOwn(board[i-2][j-1])) {
+                    strOut.add(array_to_board(i,j,i-2,j-1));
+                }
+                //uur
+                if (isValidArrayMove(i-2,j+1) && !isOwn(board[i-2][j+1])) {
+                    strOut.add(array_to_board(i,j,i-2,j+1));
+                }
+                //ull
+                if (isValidArrayMove(i-1,j-2) && !isOwn(board[i-1][j-2])) {
+                    strOut.add(array_to_board(i,j,i-1,j-2));
+                }
+                //urr
+                if (isValidArrayMove(i-1,j+2) && !isOwn(board[i-1][j+2])) {
+                    strOut.add(array_to_board(i,j,i-1,j+2));
+                }
+                //ddl
+                if (isValidArrayMove(i+2,j-1) && !isOwn(board[i+2][j-1])) {
+                    strOut.add(array_to_board(i,j,i+2,j-1));
+                }
+                //ddr
+                if (isValidArrayMove(i+2,j+1) && !isOwn(board[i+2][j+1])) {
+                    strOut.add(array_to_board(i,j,i+2,j+1));
+                }
+                //dll
+                if (isValidArrayMove(i+1,j-2) && !isOwn(board[i+1][j-2])) {
+                    strOut.add(array_to_board(i,j,i+1,j-2));
+                }
+                //drr
+                if (isValidArrayMove(i+1,j+2) && !isOwn(board[i+1][j+2])) {
+                    strOut.add(array_to_board(i,j,i+1,j+2));
+                }
+        }       
 
         return strOut;
     }
@@ -411,11 +749,12 @@ public class chess {
         Vector<String> strOut = new Vector<String>();
         for (int i=0; i<6; i++) {
             for (int j=0; j<5; j++) {
+                if (isOwn(board[i][j]))
                strOut.addAll(piece_moves(i, j));
             }
         }
 
-
+        print_board();
         for (String s: strOut) {
             System.out.println(s);
         }

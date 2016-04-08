@@ -140,7 +140,8 @@ public class chess {
 	
 	public static void boardSet(String strIn) {
 		// read the state of the game from the provided argument and set your internal variables accordingly - note that the state has exactly 40 or 41 characters
-
+        System.out.println("boardSet Called: "+strIn);
+        
 		String[] split_str = strIn.split("\n");
 		//WARNING: turn is a char make sure two digit turns parse correctly
 		turn = Character.getNumericValue(split_str[0].charAt(0));
@@ -158,6 +159,8 @@ public class chess {
 		board[3] = split_str[4].toCharArray();
 		board[4] = split_str[5].toCharArray();
 		board[5] = split_str[6].toCharArray();
+        
+        print_board();
 	}
 	
 	public static char winner() {

@@ -93,7 +93,7 @@ public class chess {
             //King
             case 'k':
             case 'K':
-                return 50;         
+                return 100000;         
             //Queen
             case 'q':
             case 'Q':
@@ -825,7 +825,7 @@ public class chess {
 		// with reference to the state of the game, determine the possible moves and shuffle them before returning them - note that you can call the chess.moves() function in here
 		Vector<String> strOut = new Vector<String>();
         strOut = moves();
-        System.out.println(strOut);
+        //System.out.println(strOut);
         Collections.shuffle(strOut);
 		return strOut;
 	}
@@ -979,10 +979,43 @@ public class chess {
 		return m;
 	}
 	
+    public static int negamax(int depth) {
+        if (depth == 0) {
+            return eval();
+        }
+        
+        int score = -99999999;
+        
+        Vector<String> move_list = new Vector<String>();
+        move_list = movesShuffled();
+        for (String m: move_list) {
+            move(m);
+            score = Math.max(score, -negamax(depth-1));
+            undo();
+        }
+        return score;
+    }
+    
 	public static String moveNegamax(int intDepth, int intDuration) {
 		// perform a negamax move and return it - one example output is given below - note that you can call the the other functions in here
-		
-		return "a5-a4\n";
+		String best = "";
+        int score = -99999999;
+        int temp = 0;
+        //intDepth = 3;
+        Vector<String> move_list = new Vector<String>();
+        move_list = movesShuffled();
+        for (String m: move_list) {            
+            move(m);
+            temp = -negamax(intDepth-1);
+            undo();            
+            if (temp > score) {
+                best = m;
+                score = temp;
+            }
+        }
+        //System.out.print(best);
+        move(best);
+		return best;
 	}
 	
 	public static String moveAlphabeta(int intDepth, int intDuration) {

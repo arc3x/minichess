@@ -1,4 +1,5 @@
 import java.util.Vector;
+import java.util.Stack;
 
 public class chess {
 	//BEGIN: TESTING FUNCTIONS
@@ -65,7 +66,8 @@ public class chess {
 	private static int turn = 1;
 	private static char side = 'W';
 	private static char[][] board = new char[6][5];
-
+    private static Stack board_stack = new Stack();
+    
     //START: HELPER FUNCTIONS
 	public static void print_board() {
 		System.out.print(turn+" "+side+"\n");
@@ -814,11 +816,11 @@ public class chess {
             }
         }
 
-        print_board();
-        System.out.println(strOut.size()+" moves produced");
-        for (String s: strOut) {
-            System.out.print(s);
-        }
+        //print_board();
+        //System.out.println(strOut.size()+" moves produced");
+        //for (String s: strOut) {
+        //    System.out.print(s);
+        //}
 		/*strOut.add("a5-a4\n");
 		strOut.add("b5-b4\n");
 		strOut.add("c5-c4\n");
@@ -842,11 +844,113 @@ public class chess {
 		return new Vector<String>();
 	}
 	
+    public static void board_to_array(String charIn, int[] mov) {
+        char cs = charIn.charAt(0);
+        char rs = charIn.charAt(1);
+        char cf = charIn.charAt(3);
+        char rf = charIn.charAt(4);
+        //0=si, 1=sj, 2=fi, 3=fj
+        switch (cs) {
+            case 'a':
+                mov[1]=0;
+                break;
+            case 'b':
+                mov[1]=1;
+                break;
+            case 'c':
+                mov[1]=2;
+                break;
+            case 'd':
+                mov[1]=3;
+                break;
+            case 'e':
+                mov[1]=4;
+                break;            
+        }
+        switch (rs) {
+            case '1':
+                mov[0]=5;
+                break;
+            case '2':
+                mov[0]=4;
+                break;
+            case '3':
+                mov[0]=3;
+                break;
+            case '4':
+                mov[0]=2;
+                break;
+            case '5':
+                mov[0]=1;
+                break;            
+            case '6':
+                mov[0]=0;
+                break;
+        }
+        switch (cf) {
+            case 'a':
+                mov[3]=0;
+                break;
+            case 'b':
+                mov[3]=1;
+                break;
+            case 'c':
+                mov[3]=2;
+                break;
+            case 'd':
+                mov[3]=3;
+                break;
+            case 'e':
+                mov[3]=4;
+                break;            
+        }
+        switch (rf) {
+            case '1':
+                mov[2]=5;
+                break;
+            case '2':
+                mov[2]=4;
+                break;
+            case '3':
+                mov[2]=3;
+                break;
+            case '4':
+                mov[2]=2;
+                break;
+            case '5':
+                mov[2]=1;
+                break;            
+            case '6':
+                mov[2]=0;
+                break;
+        }
+    }
+    
 	public static void move(String charIn) {
 		// perform the supplied move (for example "a5-a4\n") and update the state of the game / your internal variables accordingly - note that it advised to do a sanity check of the supplied move
-        //string from =
-        //string to =
-        //char piece_holder =
+        
+        //save the current board
+        board_stack.push(boardGet());
+        
+        //holds return values from board_to_array
+        //0=si, 1=sj, 2=fi, 3=fj
+        int[] move = new int[4];
+        board_to_array(charIn, move);
+        char temp = board[move[0]][move[1]];
+        if (move[2]==5 && temp=='p')
+            temp = 'q';
+        else if (move[2]==0 && temp=='P')
+            temp = 'Q';
+        board[move[0]][move[1]] = '.';
+        board[move[2]][move[3]] = temp;
+        //update size/turn
+        if (side == 'W') {
+            side = 'B';
+        } else {
+            side = 'W';
+            turn++;
+        }
+        print_board();
 	}
 	
 	public static String moveRandom() {
@@ -875,5 +979,8 @@ public class chess {
 	
 	public static void undo() {
 		// undo the last move and update the state of the game / your internal variables accordingly - note that you need to maintain an internal variable that keeps track of the previous history for this
+        print_board();
+        boardSet((String)(board_stack.pop()));
+        print_board();
 	}
 }

@@ -80,7 +80,36 @@ public class chess {
 
     //END: HELPER FUNCTIONS
 
-
+    public static int piece_value(int i, int j) {
+        switch (board[i][j]) {
+            //Pawn
+            case 'p':
+            case 'P':
+                return 1;                
+            //King
+            case 'k':
+            case 'K':
+                return 50;         
+            //Queen
+            case 'q':
+            case 'Q':
+                return 10;
+            //Bishop    
+            case 'b':
+            case 'B':
+                return 3;
+            //Rook    
+            case 'r':
+            case 'R':
+                return 4;
+            //Knight    
+            case 'n':
+            case 'N':
+                return 3;
+            default:
+                return 0;
+        }
+    }
 
 	public static void reset() {
 		// reset the state of the game / your internal variables - note that this function is highly dependent on your implementation
@@ -140,7 +169,7 @@ public class chess {
 	
 	public static void boardSet(String strIn) {
 		// read the state of the game from the provided argument and set your internal variables accordingly - note that the state has exactly 40 or 41 characters
-        System.out.println("boardSet Called: "+strIn);
+        //System.out.println("boardSet Called: "+strIn);
         
 		String[] split_str = strIn.split("\n");
 		//WARNING: turn is a char make sure two digit turns parse correctly
@@ -160,7 +189,7 @@ public class chess {
 		board[4] = split_str[5].toCharArray();
 		board[5] = split_str[6].toCharArray();
         
-        print_board();
+        //print_board();
 	}
 	
 	public static char winner() {
@@ -277,8 +306,31 @@ public class chess {
 	
 	public static int eval() {
 		// with reference to the state of the game, return the the evaluation score of the side on move - note that positive means an advantage while negative means a disadvantage
-		
-		return 0;
+		int w_score = 0;
+        int b_score = 0;
+        for (int i=0; i<6; i++) {
+            for (int j=0; j<5; j++) {
+                if (board[i][j] != '.') {
+                    //is it a white piece?
+                    if (Character.isUpperCase(board[i][j])) {
+                        w_score += piece_value(i,j);
+                    }
+                    //else its a black piece
+                    else {
+                        b_score += piece_value(i,j);
+                    }
+                }
+            }
+        }
+        
+        //return a score with respect to white
+        if (side == 'W') {
+            return w_score-b_score;
+        } 
+        //else return a score with respect to black
+        else {
+            return b_score-w_score;
+        }       
 	}
 
     //  converts array positions to move strings
@@ -369,13 +421,13 @@ public class chess {
                 strOut += '1';
                 break;
         }
-
+        strOut += '\n';
         return strOut;
     }
 
     public static Vector<String> piece_moves(int i, int j) {
         Vector<String> strOut = new Vector<String>();
-        System.out.println("piece_moves called : "+board[i][j]);        
+        //System.out.println("piece_moves called : "+board[i][j]);        
         //utility defs
         boolean flag_ul = true;
         boolean flag_u = true;
@@ -391,7 +443,7 @@ public class chess {
             case 'P':
                 //System.out.println("piece_moves called - pawn");
                 //can pawn move up?
-                if (isValidArrayMove(i-1,j)) {
+                if (isValidArrayMove(i-1,j) && isNothing(board[i-1][j])) {
                     strOut.add(array_to_board(i,j,i-1,j));
                 }
                 //can pawn attach up-left?
@@ -412,7 +464,7 @@ public class chess {
             case 'p':
                 //System.out.println("piece_moves called - pawn");
                 //can pawn move down?
-                if (isValidArrayMove(i+1,j)) {
+                if (isValidArrayMove(i+1,j) && isNothing(board[i+1][j])) {
                     strOut.add(array_to_board(i,j,i+1,j));
                 }
                 //can pawn attach down-left?
@@ -576,7 +628,8 @@ public class chess {
                         }
                     } else {
                         flag_l = false;
-                    }                                    
+                    }
+                    step++;
                 }
                 break;
             //Bishop
@@ -593,6 +646,8 @@ public class chess {
                 flag_l = true;
                 step = 1;
                 while (flag_ul || flag_u || flag_ur || flag_r || flag_dr || flag_d || flag_dl || flag_dl || flag_l) {
+                    //System.out.println("Flags: "+flag_ul+""+flag_u+""+flag_ur+""+flag_r+""+flag_dr+""+flag_d+""+flag_dl+""+flag_l);
+                    
                     //ul attack/move
                     if (flag_ul && isValidArrayMove(i-step,j-step) && !isOwn(board[i-step][j-step])) {
                         strOut.add(array_to_board(i,j,i-step,j-step));
@@ -653,6 +708,7 @@ public class chess {
                         strOut.add(array_to_board(i,j,i,j-step));                        
                         flag_l = false;
                     } else { flag_l = false; }                                    
+                    step++;
                 }
                 break;
             //Rook
@@ -704,7 +760,8 @@ public class chess {
                         }
                     } else {
                         flag_l = false;
-                    }                                    
+                    } 
+                    step++;
                 }
                 break;
             //knight
@@ -753,13 +810,14 @@ public class chess {
         for (int i=0; i<6; i++) {
             for (int j=0; j<5; j++) {
                 if (isOwn(board[i][j]))
-               strOut.addAll(piece_moves(i, j));
+                    strOut.addAll(piece_moves(i, j));
             }
         }
 
         print_board();
+        System.out.println(strOut.size()+" moves produced");
         for (String s: strOut) {
-            System.out.println(s);
+            System.out.print(s);
         }
 		/*strOut.add("a5-a4\n");
 		strOut.add("b5-b4\n");

@@ -1,5 +1,7 @@
 import java.util.Vector;
 import java.util.Stack;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class chess {
 	//BEGIN: TESTING FUNCTIONS
@@ -814,34 +816,37 @@ public class chess {
                 if (isOwn(board[i][j]))
                     strOut.addAll(piece_moves(i, j));
             }
-        }
-
-        //print_board();
-        //System.out.println(strOut.size()+" moves produced");
-        //for (String s: strOut) {
-        //    System.out.print(s);
-        //}
-		/*strOut.add("a5-a4\n");
-		strOut.add("b5-b4\n");
-		strOut.add("c5-c4\n");
-		strOut.add("d5-d4\n");
-		strOut.add("e5-e4\n");
-		strOut.add("b6-a4\n");
-		strOut.add("b6-c4\n");*/
+        }    
 		
 		return strOut;
 	}
 	
 	public static Vector<String> movesShuffled() {
 		// with reference to the state of the game, determine the possible moves and shuffle them before returning them - note that you can call the chess.moves() function in here
-		
-		return new Vector<String>();
+		Vector<String> strOut = new Vector<String>();
+        strOut = moves();
+        System.out.println(strOut);
+        Collections.shuffle(strOut);
+		return strOut;
 	}
 	
 	public static Vector<String> movesEvaluated() {
 		// with reference to the state of the game, determine the possible moves and sort them in order of an increasing evaluation score before returning them - note that you can call the chess.moves() function in here
-		
-		return new Vector<String>();
+		Vector<String> strOut = new Vector<String>();
+        strOut = moves();
+        Collections.sort(strOut, new Comparator<String>() {
+                @Override
+                public int compare(String lhs, String rhs) {
+                    move(lhs);
+                    int lhs_eval = eval();                   
+                    undo();
+                    move(rhs);
+                    int rhs_eval = eval();                    
+                    undo();
+                    return lhs_eval-rhs_eval;
+                }
+            });
+		return strOut;
 	}
 	
     public static void board_to_array(String charIn, int[] mov) {
@@ -943,7 +948,7 @@ public class chess {
             temp = 'Q';
         board[move[0]][move[1]] = '.';
         board[move[2]][move[3]] = temp;
-        //update size/turn
+        //update side/turn
         if (side == 'W') {
             side = 'B';
         } else {
@@ -954,14 +959,24 @@ public class chess {
 	
 	public static String moveRandom() {
 		// perform a random move and return it - one example output is given below - note that you can call the chess.movesShuffled() function as well as the chess.move() function in here
-		
-		return "a5-a4\n";
+		Vector<String> move_list = new Vector<String>();
+        move_list = movesShuffled();
+        if (move_list.isEmpty())
+            return "";
+        String m = move_list.firstElement();
+        move(m);
+		return m;
 	}
 	
 	public static String moveGreedy() {
 		// perform a greedy move and return it - one example output is given below - note that you can call the chess.movesEvaluated() function as well as the chess.move() function in here
-		
-		return "a5-a4\n";
+		Vector<String> move_list = new Vector<String>();
+        move_list = movesEvaluated();
+        if (move_list.isEmpty())
+            return "";
+        String m = move_list.firstElement();
+        move(m);
+		return m;
 	}
 	
 	public static String moveNegamax(int intDepth, int intDuration) {

@@ -66,7 +66,7 @@ public class chess {
 	private static int turn = 1;
 	private static char side = 'W';
 	private static char[][] board = new char[6][5];
-    private static Stack board_stack = new Stack();
+    private static Stack<String> board_stack = new Stack<String>();
     
     //START: HELPER FUNCTIONS
 	public static void print_board() {
@@ -949,8 +949,7 @@ public class chess {
         } else {
             side = 'W';
             turn++;
-        }
-        print_board();
+        }        
 	}
 	
 	public static String moveRandom() {
@@ -979,8 +978,6 @@ public class chess {
 	
 	public static void undo() {
 		// undo the last move and update the state of the game / your internal variables accordingly - note that you need to maintain an internal variable that keeps track of the previous history for this
-        print_board();
-        boardSet((String)(board_stack.pop()));
-        print_board();
+        boardSet(board_stack.pop());
 	}
 }

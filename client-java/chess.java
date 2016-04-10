@@ -4,63 +4,194 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class chess {
-	//BEGIN: TESTING FUNCTIONS
-	public static void main(String [] args) {
+    //used for unit tests
+    public static void main(String [] args) {
 		System.out.println("test");
-		reset();
-		print_board();
-		System.out.println(boardGet());
-		String strOut = "";
-
-		strOut += "12W\n";
-		strOut += "kqbnr\n";
-		strOut += "ppppp\n";
-		strOut += ".....\n";
-		strOut += "P....\n";
-		strOut += ".PPPP\n";
-		strOut += "RNBQK\n";
-		boardSet(strOut);
-		print_board();
+		//reset();
+		//print_board();
+		test_calcMaxAlphaBetaTime();
+		//test_calcAvgAlphaBetaTime();
+		//test_calcAvgNegamaxTime();
+		//test_calcMaxNegamaxTime();
+        //test_playGames();
 	}
+    
+	//BEGIN: TESTING FUNCTIONS
+    
+    
+    
+    //repeadedly playes games. used to measure running time of a game. Used for tuning AI to the chess clock
+    //exit condition is chess clock expiration
+    //may loop forever
+    public static void test_playGames() {
+        System.out.println("Playing many many games");               
+        
+        while (true) {
+            reset();
+            double white_time = 300000;
+            double black_time = 300000;
+            while (winner() == '?') { 
+                if (side == 'W') {
+                    long start_time = System.nanoTime();
+                    moveNegamaxWrapper((int)white_time);
+                    long end_time = System.nanoTime();
+                    double difference = (end_time - start_time)/1e6;
+                    white_time -= difference;
+                    if (white_time <= 0) {
+                        print_board();
+                        System.out.println("Last move took: "+difference);
+                        System.out.println("White Clock: "+white_time);
+                        System.out.println("Black Clock: "+black_time);
+                        System.out.println("White player overtime!");
+                        return;
+                    }
+                } else if (side == 'B') {
+                    long start_time = System.nanoTime();
+                    moveNegamaxWrapper((int)black_time);
+                    long end_time = System.nanoTime();
+                    double difference = (end_time - start_time)/1e6;
+                    black_time -= difference;
+                    if (black_time <= 0) {
+                        print_board();
+                        System.out.println("Last move took: "+difference);
+                        System.out.println("White Clock: "+white_time);
+                        System.out.println("Black Clock: "+black_time);
+                        System.out.println("Black player overtime!");
+                        return;
+                    }
+                }
+                //print_board();
+                //System.out.println("White Clock: "+white_time);
+                //System.out.println("Black Clock: "+black_time);
+                //System.out.println();                
+            }
+            print_board();
+            System.out.println("Winner: "+winner());
+            System.out.println("White Clock: "+white_time);
+            System.out.println("Black Clock: "+black_time);
+            System.out.println();
+        }                    
+    }
+    
+    //calculates average times for several different depths of negamax searches. this data is used to manually tune the AI
+    public static void test_calcAvgNegamaxTime() {
+        System.out.println("Calculating avearage negamax time");
+            
+        for (int i=3; i<=15; i++) {
+            reset();
+            int count=0;
+            double time=0;
+            while (winner() == '?') {            
+                long start_time = System.nanoTime();
+                moveNegamax(i,999);
+                long end_time = System.nanoTime();
+                double difference = (end_time - start_time)/1e6;
+                time += difference;
+                count++;                    
+            }
+            System.out.println("Depth "+i+" Average runtime: "+(time/count)+" milliseconds");  
+        }                                
+    }
+    
+    //calculates max times for several different depths of negamax searches. this data is used to manually tune the AI
+    public static void test_calcMaxNegamaxTime() {
+        System.out.println("Calculating maximum negamax time");
+        
+        for (int i=3; i<=15; i++) {
+            reset();
+            double time=0;
+            while (winner() == '?') {            
+                long start_time = System.nanoTime();
+                moveNegamax(i,999);
+                long end_time = System.nanoTime();
+                double difference = (end_time - start_time)/1e6;
+                if (difference > time)
+                    time = difference;
+            }
+            System.out.println("Depth 4 Max runtime: "+(time)+" milliseconds");
+        }                                 
+    }
+    
+    public static void test_calcAvgAlphaBetaTime() {
+        System.out.println("Calculating avearage alphabeta negamax time");
+            
+        for (int i=3; i<=15; i++) {
+            reset();
+            int count=0;
+            double time=0;
+            while (winner() == '?') {            
+                long start_time = System.nanoTime();
+                moveAlphabeta(i,999);
+                long end_time = System.nanoTime();
+                double difference = (end_time - start_time)/1e6;
+                time += difference;
+                count++;                    
+            }
+            System.out.println("Depth "+i+" Average runtime: "+(time/count)+" milliseconds");  
+        }                                
+    }
+    
+    //calculates max times for several different depths of alphabeta negamax searches. this data is used to manually tune the AI
+    public static void test_calcMaxAlphaBetaTime() {
+        System.out.println("Calculating maximum negamax time");              
+
+        for (int i=3; i<=15; i++) {
+            reset();
+            int count=0;
+            double time=0;
+            while (winner() == '?') {            
+                long start_time = System.nanoTime();
+                moveAlphabeta(i,999);
+                long end_time = System.nanoTime();
+                double difference = (end_time - start_time)/1e6;
+                if (difference > time)
+                    time = difference;
+            }
+            System.out.println("Depth "+i+" Max runtime: "+time+" milliseconds");    
+        }            
+                  
+    }
+    
+	
 
 	public static void preset() {
 		// reset the state of the game / your internal variables - note that this function is highly dependent on your implementation
-		turn = 1;
-		side = 'W';
-		board[0][0] = 'k';
-		board[0][1] = 'q';
-		board[0][2] = 'b';
-		board[0][3] = 'n';
-		board[0][4] = 'r';
+		turn = 30;
+		side = 'B';
+		board[0][0] = '.';
+		board[0][1] = 'k';
+		board[0][2] = '.';
+		board[0][3] = '.';
+		board[0][4] = '.';
 
-		board[1][0] = '.';
-		board[1][1] = 'p';
-		board[1][2] = 'p';
-		board[1][3] = 'p';
-		board[1][4] = 'p';
+		board[1][0] = 'R';
+		board[1][1] = '.';
+		board[1][2] = 'Q';
+		board[1][3] = '.';
+		board[1][4] = '.';
 
-		board[2][0] = 'p';
+		board[2][0] = '.';
 		board[2][1] = '.';
 		board[2][2] = '.';
-		board[2][3] = '.';
+		board[2][3] = 'N';
 		board[2][4] = '.';
 
 		board[3][0] = '.';
 		board[3][1] = '.';
-		board[3][2] = '.';
-		board[3][3] = '.';
-		board[3][4] = 'P';
+		board[3][2] = 'P';
+		board[3][3] = 'P';
+		board[3][4] = '.';
 
-		board[4][0] = 'P';
-		board[4][1] = 'P';
-		board[4][2] = 'P';
-		board[4][3] = 'P';
+		board[4][0] = '.';
+		board[4][1] = '.';
+		board[4][2] = 'B';
+		board[4][3] = '.';
 		board[4][4] = '.';
 
-		board[5][0] = 'R';
-		board[5][1] = 'N';
-		board[5][2] = 'B';
-		board[5][3] = 'Q';
+		board[5][0] = '.';
+		board[5][1] = '.';
+		board[5][2] = '.';
+		board[5][3] = '.';
 		board[5][4] = 'K';
 	}
 	//END: TESTING FUNCTIONS
@@ -72,7 +203,7 @@ public class chess {
     
     //START: HELPER FUNCTIONS
 	public static void print_board() {
-		System.out.print(turn+" "+side+"\n");
+		System.out.print(turn+" "+side+"  ("+eval()+")\n");
 		for (int i=0; i<6; i++) {
 			for (int j=0; j<5; j++) {
 				System.out.print(board[i][j]);
@@ -80,15 +211,22 @@ public class chess {
 			System.out.print("\n");
 		}
 	}
-
-
     //END: HELPER FUNCTIONS
 
     public static int piece_value(int i, int j) {
         switch (board[i][j]) {
             //Pawn
             case 'p':
+                //encourage pawn promotion
+                if (i == 5) {
+                    return 6;
+                }
+                return 1;
             case 'P':
+                //encourage pawn promotion
+                if (i == 0) {
+                    return 6;
+                }
                 return 1;                
             //King
             case 'k':
@@ -933,6 +1071,14 @@ public class chess {
     
 	public static void move(String charIn) {
 		// perform the supplied move (for example "a5-a4\n") and update the state of the game / your internal variables accordingly - note that it advised to do a sanity check of the supplied move
+     
+        //WARNING: adds lag bugfix for end of game crashes
+        //if (charIn == "") {
+        //    board_stack.push(boardGet());
+        //    return;
+        //}  
+        
+        
         
         //save the current board
         board_stack.push(boardGet());
@@ -995,6 +1141,14 @@ public class chess {
         }
         return score;
     }
+    public static void moveNegamaxWrapper(int intDuration) {
+        if (intDuration > 40000)
+            moveNegamax(6,0);
+        else if (intDuration > 8000)
+            moveNegamax(5,0);
+        else
+            moveNegamax(4,0);
+    }
     
 	public static String moveNegamax(int intDepth, int intDuration) {
 		// perform a negamax move and return it - one example output is given below - note that you can call the the other functions in here
@@ -1004,6 +1158,10 @@ public class chess {
         //intDepth = 3;
         Vector<String> move_list = new Vector<String>();
         move_list = movesShuffled();
+        //WARNING: following line adds time factor
+        //if (move_list.isEmpty()) {
+        //    return best;
+        //}
         for (String m: move_list) {            
             move(m);
             temp = -negamax(intDepth-1);
@@ -1014,15 +1172,68 @@ public class chess {
             }
         }
         //System.out.print(best);
+        //System.out.println("moving: "+best);
+        if (best == "") {
+            best = move_list.firstElement();
+        }
         move(best);
 		return best;
 	}
 	
+    public static int negamax_alphaBeta(int depth, int alpha, int beta) {
+        if (depth == 0) {
+            return eval();
+        }
+        
+        int score = -99999999;
+        
+        Vector<String> move_list = new Vector<String>();
+        move_list = movesEvaluated();
+        for (String m: move_list) {
+            move(m);
+            int v = -negamax_alphaBeta(depth-1, -1*beta, -1*alpha);
+            score = Math.max(score, v);
+            undo();
+            alpha = Math.max(alpha, v);
+            if (alpha >= beta)
+                break;
+            
+        }
+        return score;
+    }
+    
 	public static String moveAlphabeta(int intDepth, int intDuration) {
 		// perform a alphabeta move and return it - one example output is given below - note that you can call the the other functions in here
-		
-		return "a5-a4\n";
+		String best = "";
+        int score = -99999999;
+        int alpha = -99999999;
+        int beta = 99999999;
+        
+        int temp = 0;
+        //intDepth = 4;
+        Vector<String> move_list = new Vector<String>();
+        move_list = movesEvaluated();
+
+        for (String m: move_list) {
+            move(m);
+            int v = -negamax_alphaBeta(intDepth-1, alpha, beta);
+            score = Math.max(score, v);
+            undo();
+            alpha = Math.max(alpha, v);
+            if (alpha >= beta)
+                break;
+            
+        }
+        //System.out.print(best);
+        //System.out.println("moving: "+best);
+        if (best == "") {
+            best = move_list.firstElement();
+        }
+        move(best);
+		return best;
 	}
+    
+    
 	
 	public static void undo() {
 		// undo the last move and update the state of the game / your internal variables accordingly - note that you need to maintain an internal variable that keeps track of the previous history for this

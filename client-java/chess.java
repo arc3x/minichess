@@ -2,6 +2,7 @@ import java.util.Vector;
 import java.util.Stack;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 
 public class chess {
     //used for unit tests
@@ -9,11 +10,14 @@ public class chess {
 		System.out.println("test");
 		//reset();
 		//print_board();
-		test_calcMaxAlphaBetaTime();
-		//test_calcAvgAlphaBetaTime();
-		//test_calcAvgNegamaxTime();
+		//test_calcMaxAlphaBetaTime();
+		test_calcAvgAlphaBetaTransTime();
+		test_calcAvgAlphaBetaTime();
+		test_calcAvgNegamaxTime();
 		//test_calcMaxNegamaxTime();
         //test_playGames();
+        //reset();
+        //System.out.println(moveNegamaxAlphabetaTrans(5,999));
 	}
     
 	//BEGIN: TESTING FUNCTIONS
@@ -74,10 +78,30 @@ public class chess {
     }
     
     //calculates average times for several different depths of negamax searches. this data is used to manually tune the AI
+    public static void test_calcAvgAlphaBetaTransTime() {
+        System.out.println("Calculating avearage alphabeta trans negamax time");
+            
+        for (int i=3; i<=7; i++) {
+            reset();
+            int count=0;
+            double time=0;
+            while (winner() == '?') {            
+                long start_time = System.nanoTime();
+                moveNegamaxAlphabetaTrans(i,999);
+                long end_time = System.nanoTime();
+                double difference = (end_time - start_time)/1e6;
+                time += difference;
+                count++;                    
+            }
+            System.out.println("Depth "+i+" Average runtime: "+(time/count)+" milliseconds");  
+        }                                
+    }
+    
+    //calculates average times for several different depths of negamax searches. this data is used to manually tune the AI
     public static void test_calcAvgNegamaxTime() {
         System.out.println("Calculating avearage negamax time");
             
-        for (int i=3; i<=15; i++) {
+        for (int i=3; i<=7; i++) {
             reset();
             int count=0;
             double time=0;
@@ -97,7 +121,7 @@ public class chess {
     public static void test_calcMaxNegamaxTime() {
         System.out.println("Calculating maximum negamax time");
         
-        for (int i=3; i<=15; i++) {
+        for (int i=3; i<=7; i++) {
             reset();
             double time=0;
             while (winner() == '?') {            
@@ -115,7 +139,7 @@ public class chess {
     public static void test_calcAvgAlphaBetaTime() {
         System.out.println("Calculating avearage alphabeta negamax time");
             
-        for (int i=3; i<=15; i++) {
+        for (int i=3; i<=7; i++) {
             reset();
             int count=0;
             double time=0;
@@ -200,6 +224,7 @@ public class chess {
 	private static char side = 'W';
 	private static char[][] board = new char[6][5];
     private static Stack<String> board_stack = new Stack<String>();
+    private static HashMap<String,tableEntry> trans = new HashMap<String, tableEntry>();
     
     //START: HELPER FUNCTIONS
 	public static void print_board() {
@@ -255,6 +280,7 @@ public class chess {
 
 	public static void reset() {
 		// reset the state of the game / your internal variables - note that this function is highly dependent on your implementation
+        board_stack = new Stack<String>();
 		turn = 1;
 		side = 'W';
 		board[0][0] = 'k';
@@ -1191,9 +1217,9 @@ public class chess {
         move_list = movesEvaluated();
         for (String m: move_list) {
             move(m);
-            int v = -negamax_alphaBeta(depth-1, -1*beta, -1*alpha);
-            score = Math.max(score, v);
+            int v = -negamax_alphaBeta(depth-1, -beta, -alpha);
             undo();
+            score = Math.max(score, v);            
             alpha = Math.max(alpha, v);
             if (alpha >= beta)
                 break;
@@ -1210,33 +1236,120 @@ public class chess {
         int beta = 99999999;
         
         int temp = 0;
-        //intDepth = 4;
         Vector<String> move_list = new Vector<String>();
         move_list = movesEvaluated();
-
+        //System.out.println(move_list);
         for (String m: move_list) {
             move(m);
             int v = -negamax_alphaBeta(intDepth-1, alpha, beta);
-            score = Math.max(score, v);
             undo();
-            alpha = Math.max(alpha, v);
-            if (alpha >= beta)
-                break;
+            if (v > score) {
+                best = m;
+                score = v;
+            }       
             
-        }
-        //System.out.print(best);
-        //System.out.println("moving: "+best);
-        if (best == "") {
-            best = move_list.firstElement();
         }
         move(best);
 		return best;
 	}
     
     
+    
+    
+    
+    
+    
+    
+    
+    //code from wiki - negamax
+    public static int negamax_alphaBetaTrans(int depth, int alpha, int beta) {
+        int alphaOrig = alpha;
+        
+        //Transposition table lookup
+        tableEntry t = trans.get(boardGet());
+        if (t!=null && t.depth>=depth) {
+            if (t.flag == 'E') 
+                return t.val;
+            else if (t.flag == 'L')
+                alpha = Math.max(alpha, t.val);
+            else if (t.flag == 'U')
+                beta = Math.min(beta, t.val);
+            if (alpha >= beta)
+                return t.val;
+        }
+        
+        if (depth == 0) {
+            return eval();
+        }
+           
+        int score = -99999999;
+        
+        Vector<String> move_list = new Vector<String>();
+        move_list = movesEvaluated();
+        for (String m: move_list) {
+            move(m);
+            int v = -negamax_alphaBetaTrans(depth-1, -beta, -alpha);
+            undo();
+            score = Math.max(score, v);            
+            alpha = Math.max(alpha, v);
+            if (alpha >= beta)
+                break;
+            
+        }
+        
+        //Transposition table store
+        if (t==null)
+            t = new tableEntry();
+        t.val = score;
+        if (score <= alphaOrig)
+            t.flag = 'U';
+        else if (score >= beta)
+            t.flag = 'L';
+        else
+            t.flag = 'E';
+        t.depth = depth;
+        trans.put(boardGet(), t);
+        
+        
+        return score;
+    }
+
+	public static String moveNegamaxAlphabetaTrans(int intDepth, int intDuration) {
+		// perform a alphabeta move and return it - one example output is given below - note that you can call the the other functions in here
+		
+        trans = new HashMap<String, tableEntry>();
+        
+		String best = "";
+        int score = -99999999;
+        int alpha = -99999999;
+        int beta = 99999999;
+        
+        int temp = 0;
+        Vector<String> move_list = new Vector<String>();
+        move_list = movesEvaluated();
+        //System.out.println(move_list);
+        for (String m: move_list) {
+            move(m);
+            int v = -negamax_alphaBetaTrans(intDepth-1, alpha, beta);
+            undo();
+            if (v > score) {
+                best = m;
+                score = v;
+            }       
+            
+        }
+        move(best);
+		return best;
+	}    
 	
 	public static void undo() {
 		// undo the last move and update the state of the game / your internal variables accordingly - note that you need to maintain an internal variable that keeps track of the previous history for this
         boardSet(board_stack.pop());
 	}
+}
+
+class tableEntry {
+    public int val;
+    public char flag;
+    public int depth;
 }

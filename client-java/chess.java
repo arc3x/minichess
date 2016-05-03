@@ -368,9 +368,7 @@ public class chess {
 		// determine the winner of the current state of the game and return '?' or '=' or 'W' or 'B' - note that we are returning a character and not a string
 		//print_board();
 
-        if (turn > 40) {
-            return '=';
-        }
+
 
         boolean white = false;
 		boolean black = false;
@@ -382,6 +380,16 @@ public class chess {
 					white = true;
 			}
 		}
+
+        //check for turn limit
+        if (turn > 40) {
+            //check special case of black won on last move
+            if (turn==41 && black && !white) {
+                return 'B';
+            }
+            return '=';
+        }
+
 		if (white && black) {
             //System.out.println("?");
             return '?';

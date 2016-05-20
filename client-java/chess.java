@@ -14,9 +14,9 @@ public class chess {
         //undo();
         //System.out.println(moveNegamax(2,9));
 		//print_board();
-		test_calcMaxAlphaBetaTime();
-		test_calcAvgAlphaBetaTransTime();
-		//test_calcAvgAlphaBetaTime();
+	//	test_calcMaxAlphaBetaTime();
+		//test_calcAvgAlphaBetaTransTime();
+		test_calcAvgAlphaBetaTime();
 		//test_calcAvgNegamaxTime();
 		//test_calcMaxNegamaxTime();
         //test_playGames();
@@ -81,25 +81,6 @@ public class chess {
         }                    
     }
     
-    //calculates average times for several different depths of negamax searches. this data is used to manually tune the AI
-    public static void test_calcAvgAlphaBetaTransTime() {
-        System.out.println("Calculating avearage alphabeta trans negamax time");
-            
-        for (int i=3; i<=6; i++) {
-            reset();
-            int count=0;
-            double time=0;
-            while (winner() == '?') {            
-                long start_time = System.nanoTime();
-                moveNegamaxAlphabetaTrans(i,999);
-                long end_time = System.nanoTime();
-                double difference = (end_time - start_time)/1e6;
-                time += difference;
-                count++;                    
-            }
-            System.out.println("Depth "+i+" Average runtime: "+(time/count)+" milliseconds");  
-        }                                
-    }
     
     //calculates average times for several different depths of negamax searches. this data is used to manually tune the AI
     public static void test_calcAvgNegamaxTime() {
@@ -143,7 +124,7 @@ public class chess {
     public static void test_calcAvgAlphaBetaTime() {
         System.out.println("Calculating avearage alphabeta negamax time");
             
-        for (int i=3; i<=7; i++) {
+        for (int i=3; i<=10; i++) {
             reset();
             int count=0;
             double time=0;
@@ -1281,6 +1262,15 @@ public class chess {
     
 	public static String moveAlphabeta(int intDepth, int intDuration) {
 		// perform a alphabeta move and return it - one example output is given below - note that you can call the the other functions in here
+		if (intDepth<0) {
+			if (intDuration > 40000)
+				intDepth=9;
+			else if (intDuration > 8000)
+				intDepth=8;
+			else
+				intDepth=6;
+		}
+		
 		String best = "";
         int alpha = -99999999;
         int beta = 99999999;

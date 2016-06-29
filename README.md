@@ -1,45 +1,31 @@
-#teaching-minichess
-this project provides the framework for the advanced artificial intelligence class, in which an artificial chess player is ought to be implemented.
+#minichess
+
+##credits
+Framework - Simon Niklaus
+Client - Matthew Slocum
 
 ##overview
-the repository contains the framework itself, as well as multiple empty clients in various languages. the framework provides a generic scaffolding, while a fully implemented client represents an artificial chess player. the framework as well as a client therefore need to be executed concurrently in order to have a running system.
+the repository contains the framework itself, as well as a client. the framework provides a generic scaffolding, while a fully implemented client represents an artificial chess player. the framework as well as a client therefore need to be executed concurrently in order to have a running system.
 
-the framework provides a graphical user interface that is accessible through a webbrowser, as well as several test cases to validate the implementation of a client. to let artificial chess players compete against each other, the framework furthermore provides a network interoperability through an external server.
+the framework provides a graphical user interface that is accessible through a webbrowser, as well as several test cases to validate the implementation of the client. to let artificial chess players compete against each other, the framework furthermore provides a network interoperability through an external server.
 
 <p align="center"><img src="http://content.coderect.com/ChessRect/Teaching/ScreenshotThumb.png" alt="ScreenshotThumb"></p>
 
 ##prerequisites
-while you are able to choose between different languages to implement the client, the framework itself is written in c. therefore, the `gcc` compiler must be present and running in a `64 bit` environment to build the framework. unless you are making use of the linux lab, you might have to separately install the appropriate compiler toolchain. should you be able to use `apt-get`, you can install the following package to do so.
+while you are able to choose between different languages to implement the client, the framework itself is written in c. therefore, the `gcc` compiler must be present and running in a `64 bit` environment to build the framework. you might have to separately install the appropriate compiler toolchain. should you be able to use `apt-get`, you can install the following package to do so.
 
 ```
 sudo apt-get install build-essential
 ```
 
-should you be unable to setup the compiler toolchain correctly, i am afraid that there will not be individual support to resolve this issue. the machines in the linux lab are appropriately configured, so you always have the option to use them in favor of your personal computer.
-
-besides the compiler toolchain, it is necessary to install `zeromq` with version `3.*` which will be used to communicate between the framework and a client. this dependency is already met by the machines in the linux lab but can easily be installed on a debian computer through the corresponding package.
+besides the compiler toolchain, it is necessary to install `zeromq` with version `3.*` which will be used to communicate between the framework and a client.
 
 ```
 sudo apt-get install libzmq3-dev
 ```
 
-should you not be able to use `apt-get` or should you experience any issues during the installation, you can consult [zeromq.org](http://zeromq.org/intro:get-the-software) for further instructions. as with the compiler toolchain, i am afraid that there will not be individual support to resolve this issue.
-
-##download
-to download this framework, you can either use the button on the top of this page or clone the repository with the following command. the latter option is recommended as you are encouraged to manage your code in a source repository, even though you might have to install [git](http://git-scm.com) before you will be able to do so.
-
-```
-git clone https://github.com/CodeRect/teaching-minichess
-```
-
-after downloading and choosing a client, please change the name of your implementation in the main file. note that there are certain restrictions for a valid name. it must not contain non printable characters and must not exceed the length limitation of fifteen characters.
-
-```javascript
-Name = "YOUR NAME"; // CHANGE THIS - REQUIRED
-```
-
 ##usage
-as stated in the overview, it is necessary to use the framework together with a client. this section will accordingly outline the necessary steps for compiling and running the framework as well as the empty clients.
+as stated in the overview, it is necessary to use the framework together with a client. this section will accordingly outline the necessary steps for compiling and running the framework as well as the client.
 
 ###`framework`
 a rudimentary makefile is already provided in order to build the framework. after you open a console and navigate to the folder of the framework, you can therefore utilize the `make` command.
@@ -57,23 +43,8 @@ after a successful compilation, a `framework` binary should have been built that
 once the framework has started, it is possible to access the corresponding webinterface through your webbrowser. to do so, simply navigate to the url that is stated below. note that you will initially only see a message that there is no client present, which will disappear once a client is being executed concurrently.
 
 ```
-localhost:8080
+localhost:8042
 ```
-
-###`client-c`
-a rudimentary makefile is already provided in order to build the client. after you open a console and navigate to the folder of the client, you can therefore utilize the `make` command.
-
-```
-make
-```
-
-after a successful compilation, a `client` binary should have been built that you can subsequently execute to run the client.
-
-```
-./client
-```
-
-once the client is started, it should automatically connect to the framework. of course, a the framework needs to be executed concurrently to allow this interconnection to happen. after the client as well as the framework are being executed cooperatively, you should be able to access the webinterface and to interact with the client through the said graphical user interface.
 
 ###`client-java`
 a rudimentary makefile is already provided in order to build the client. after you open a console and navigate to the folder of the client, you can therefore utilize the `make` command.
@@ -90,45 +61,17 @@ java -ea -jar client.jar
 
 once the client is started, it should automatically connect to the framework. of course, a the framework needs to be executed concurrently to allow this interconnection to happen. after the client as well as the framework are being executed cooperatively, you should be able to access the webinterface and to interact with the client through the said graphical user interface.
 
-###`client-python`
-in order to be able to use the python client, it is necessary to install the `pyzmq` module. this has already been done for the machines in the linux lab, but you can use `pip` to install it on your own machine. should you be unable to install this additional module, i am afraid that there will not be individual support to resolve this issue. as mentioned earlier, you always have the option to use the correctly configured machines in the linux lab.
-
-```
-pip install pyzmq
-```
-
-since no compilation step is necessary to run the python client, a python interpreter can accordingly be used to execute the main file.
-
-```
-python main.py
-```
-
-once the client is started, it should automatically connect to the framework. of course, a the framework needs to be executed concurrently to allow this interconnection to happen. after the client as well as the framework are being executed cooperatively, you should be able to access the webinterface and to interact with the client through the said graphical user interface.
-
 ##test cases
 note that the more advanced test cases rely on the basic test cases to succeed. for this reason, the most advanced test case `test_moveAlphabeta` does succeed even with the provided empty clients. other test cases like `test_moveNegamax` might not halt without a correct implementation of the basic functions. the grading will therefore not only evaluate newly implemented features, but furthermore take the basic functionalities into consideration as well.
 
-##linux lab
-when connecting remotely into the linux lab, please choose one of the machines in the [first](https://cat.pdx.edu/labstatus/labs/cslinlaba/) or the [second](https://cat.pdx.edu/labstatus/labs/cslinlabb/) lab. after selecting a machine, you can use your credentials to establish a connection through ssh. note that you can alternatively use putty as well.
-
-```
-ssh <username>@<machine>.cs.pdx.edu
-```
-
-since the framework and the client use a unique port in order to communicate, a multiuser environment like the linux lab can cause certain issues. should another instance of the framework already be running on a machine, a newly executed framework will result in a segfault. it is in such a case recommended to either switch to a different machine or to modify the mentioned unique ports in the main file of the framework as well as the client.
-
-```javascript
-Webserver = 8080; // CHANGE THIS - OPTIONAL
-Zeromq = 54361; // CHANGE THIS - OPTIONAL
-```
-
-in order to be able to access the webinterface of the framework on the remote machine in the linux lab, you need to establish an ssh tunnel such that you can use the browser on your local computer. there a few online resources that describe how this can be done and it eventually boils down to the following command. note that there is an equivalent way when using putty.
+##remote interface
+in order to be able to access the webinterface of the framework on a remote machine, you need to establish an ssh tunnel such that you can use the browser on your local computer. there a few online resources that describe how this can be done and it eventually boils down to the following command. note that there is an equivalent way when using putty.
 
 ```
 ssh <username>@<machine>.cs.pdx.edu -L 8080:localhost:8080
 ```
 
-you will eventually need three ssh connections in parallel. one for the execution of the framework, one for the execution of the client as well as one for the tunnel in order to be able to access the webinterface. i am well aware that this is rather inconvenient but it is at least guaranteed to work. you are furthermore encouraged to use your own computer without connecting remotely into the linux lab. since i am afraid that there will not be individual support to get the framework to run on your own computer, this alternative had to be provided such that nobody will be left behind.
+you will eventually need three ssh connections in parallel. one for the execution of the framework, one for the execution of the client as well as one for the tunnel in order to be able to access the webinterface.
 
 ##alternative workarounds
 using a virtual machine is always a viable option. i personally do this as well and developed this framework in a debian environment that is running within a virtual machine. note that there are quite a few free virtualizers to choose from and while i have a preferred one, i would like to take the liberty of not making any advertisements here. i would therefore recommend to read a few related online resources.
@@ -154,16 +97,10 @@ since the framework consists of several components and each component has indivi
 * `cjson`
 * `mongoose`
 
-###`client-c`
-* `zeromq`
-* `cjson`
-
 ###`client-java`
 * `jeromq`
 * `json`
 
-###`client-python`
-* `zmq`
 
 ##license
 please refer to the appropriate file within this repository.
